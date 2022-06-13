@@ -36,6 +36,12 @@ router.get('/:id', (req, res) => {
 });
 
 router.post('/', (req, res) => {
+  try {
+    const categoryData = await Category.create(req.body);
+    res.status(200).json(categoryData);
+  } catch (err) {
+    res.status(400).json(err);
+  }
   // create a new category
 });
 
@@ -45,6 +51,7 @@ router.put('/:id', (req, res) => {
 
 router.delete('/:id', (req, res) => {
   // delete a category by its `id` value
+  
 });
 
 module.exports = router;
