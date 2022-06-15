@@ -21,7 +21,7 @@ router.get('/:id', (req, res) => {
     })
    .then((categories) => res.json(categories))
    .catch((err) => res.status(400).json(err))
-   
+
   if (!categoryData) {
   res.status(404).json({ message: 'No product found!'});
     return;
@@ -33,12 +33,9 @@ router.get('/:id', (req, res) => {
 });
 
 router.post('/', (req, res) => {
-  try {
-    const categoryData = await Category.create(req.body);
-    res.status(200).json(categoryData);
-  } catch (err) {
-    res.status(400).json(err);
-  }
+  Category.create(req.body)
+  .then((categories) => res.json(categories))
+  .catch((err) => res.status(400).json(err))
   // create a new category
 });
 
@@ -54,7 +51,15 @@ router.put('/:id', (req, res) => {
 
 router.delete('/:id', (req, res) => {
   // delete a category by its `id` value
-  
+  Category.destroy({
+    where: {
+      category_id: req.body.category_id
+    }
+  })
+  .then((deletedCategory) => {
+    res.json(deletedCategory);
+  })
+  .catch((err) => res.json(err));
 });
 
 module.exports = router;

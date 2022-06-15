@@ -6,17 +6,64 @@ const { Product, Category, Tag, ProductTag } = require('../../models');
 // get all products
 router.get('/', (req, res) => {
   // find all products
+  Product.findAll({
+    include: [{ model: Category, Tag, ProductTag }]
+  })
   // be sure to include its associated Category and Tag data
+  .then((products) => res.json(products))
+  .catch((err) => res.status(400).json(err))
 });
 
 // get one product
 router.get('/:id', (req, res) => {
   // find a single product by its `id`
+  Product.findByPk(req.params.id, {
+    include: [{ model: Category, Tag, ProductTag }]
+  })
+  .then((products) => res.json(products))
+  .catch((err) => res.status(400).json(err))
+
+  if (!productData) {
+    res.status(404).json({ message: 'No product found!'});
+      return;
+      }
   // be sure to include its associated Category and Tag data
 });
 
 // create new product
 router.post('/', (req, res) => {
+  Product.bulkCreate([
+    {
+      product_name: 'Plain T-Shirt',
+      price: 14.99,
+      stock: 14,
+      category_id: 1,
+    },
+    {
+      product_name: 'Running Sneakers',
+      price: 90.0,
+      stock: 25,
+      category_id: 5,
+    },
+    {
+      product_name: 'Branded Baseball Hat',
+      price: 22.99,
+      stock: 12,
+      category_id: 4,
+    },
+    {
+      product_name: 'Top 40 Music Compilation Vinyl Record',
+      price: 12.99,
+      stock: 50,
+      category_id: 3,
+    },
+    {
+      product_name: 'Cargo Shorts',
+      price: 29.99,
+      stock: 22,
+      category_id: 2,
+    },
+  ])
   /* req.body should look like this...
     {
       product_name: "Basketball",
@@ -24,7 +71,9 @@ router.post('/', (req, res) => {
       stock: 3,
       tagIds: [1, 2, 3, 4]
     }
+    
   */
+
   Product.create(req.body)
     .then((product) => {
       // if there's product tags, we need to create pairings to bulk create in the ProductTag model
@@ -91,6 +140,15 @@ router.put('/:id', (req, res) => {
 
 router.delete('/:id', (req, res) => {
   // delete one product by its `id` value
+  Product.destroy({
+    where: {
+      product_id: req.body.product_id
+    }
+  })
+  .then((deletedProduct) => {
+    res.json(deletedProduct);
+  })
+  .catch((err) => res.json(err))
 });
 
 module.exports = router;
